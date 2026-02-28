@@ -7,8 +7,9 @@ Bootstrap
 TypeScript
 HTML / CSS
 
-#Backend
+# Backend
 .NET Web API (.NET 9)
+
 Entity Framework Core
 SQL Server
 #Features
