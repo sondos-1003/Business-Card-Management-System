@@ -40,3 +40,28 @@ Preview before save
 
 
 XML import/export
+
+# Project Structure
+# Backend (.NET)
+
+Controllers
+
+Services
+
+Repositories
+
+DTOs
+
+Data (DbContext)
+
+Entities
+
+# Frontend (Angular)
+
+Components
+
+Services
+
+Models
+
+Forms (Reactive Forms)
