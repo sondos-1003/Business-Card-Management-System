@@ -31,6 +31,8 @@ namespace NeoRxTask.Services
         }
         public async Task<BusinessCard> CreateAsync(CreateBusinessCardDto dto)
         {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
             var card = new BusinessCard
             {
                 Name = dto.Name ?? string.Empty,
