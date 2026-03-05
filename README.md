@@ -34,7 +34,7 @@ Preview before save
 
 XML import/export
 
-Unit Testing--XUnit-Moq
+Unit Testing--XUnit-Moq(In BusinessTest File)
 
 # Project Structure
 # Backend (.NET)
@@ -43,7 +43,7 @@ Controllers-Services-Repositories-DTOs-Data (DbContext)-Entities
 
 # Frontend (Angular)
 
-Components-Services-Models-Forms (Reactive Forms)
+Find THem Inside FrontEnd Folder: Components-Services-Models-Forms (Reactive Forms)
 
 
 # Fronend Screen:
