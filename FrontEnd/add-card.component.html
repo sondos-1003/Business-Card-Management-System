@@ -1,0 +1,208 @@
+<div class="container mt-4">
+  <h2 style="background-color:deepskyblue; font-style: italic;">Add Business Card</h2>
+
+  <!-- Form Section -->
+  <div class="row">
+    <div class="col-md-6">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="mb-3">
+          <label>Name</label>
+          <input type="text" formControlName="name" placeholder="Enter name" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label>Gender</label>
+          <select formControlName="gender" class="form-control">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label>Date of Birth</label>
+          <input type="date" formControlName="dob" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" formControlName="email" placeholder="Enter email" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label>Phone Number</label>
+          <input type="text" formControlName="phoneNumber" placeholder="Enter phone number" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label>Address</label>
+          <input type="text" formControlName="address" placeholder="Enter address" class="form-control">
+        </div>
+
+        <!-- <button type="submit" class="btn btn-primary me-2">Save</button> -->
+        <button type="submit" class="btn btn-primary me-2">{{ editingId ? 'Update' : 'Save' }}</button> <!-- f editingId has a value (you are editing an existing card) -->
+        <button type="button" class="btn btn-secondary me-2" (click)="preview()">Preview</button>
+        <button *ngIf="editingId" type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
+      </form>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="col-md-6" *ngIf="previewData">
+      <h3>Preview</h3>
+      <p><strong>Name:</strong> {{ previewData.name }}</p>
+      <p><strong>Gender:</strong> {{ previewData.gender }}</p>
+      <p><strong>DOB:</strong> {{ previewData.dob }}</p>
+      <p><strong>Email:</strong> {{ previewData.email }}</p>
+      <p><strong>Phone:</strong> {{ previewData.phoneNumber }}</p>
+      <p><strong>Address:</strong> {{ previewData.address }}</p>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <input placeholder="Search Name" [(ngModel)]="filters.name" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <input placeholder="Search Email" [(ngModel)]="filters.email" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <input placeholder="Search DoB" [(ngModel)]="filters.dob" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <input placeholder="Search Phone Number" [(ngModel)]="filters.phoneNumber" class="form-control">
+    </div>
+    <div class="col-md-3 mt-3">
+      <input placeholder="Search For Gender" [(ngModel)]="filters.gender" class="form-control">
+    </div>
+    <div class="col-md-2 mt-3">
+      <button class="btn btn-warning" (click)="applyFilter()">Filter</button>
+    </div>
+  </div>
+
+  <!-- Filter Results Modal -->
+  <div class="modal fade" [class.show]="showFilterModal" [style.display]="showFilterModal ? 'block' : 'none'" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filter Results</h5>
+          <button type="button" class="btn-close" (click)="closeFilterModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="filteredResults.length > 0">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>DOB</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let card of filteredResults">
+                  <td>{{ card.name }}</td>
+                  <td>{{ card.gender }}</td>
+                  <td>{{ card.dob }}</td>
+                  <td>{{ card.email }}</td>
+                  <td>{{ card.phoneNumber }}</td>
+                  <td>{{ card.address }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary me-2" (click)="editCard(card)">Edit</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteCard(card.id)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div *ngIf="filteredResults.length === 0" class="alert alert-info">
+            No results found matching your filters.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeFilterModal()">Close</button>
+          <button type="button" class="btn btn-warning" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop fade" [class.show]="showFilterModal" *ngIf="showFilterModal"></div>
+
+  <!-- Show Records Button Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <button class="btn btn-info btn-lg" (click)="showAllRecords()">Show Records</button>
+    </div>
+  </div>
+
+  <!-- All Records Modal -->
+  <div class="modal fade" [class.show]="showAllRecordsModal" [style.display]="showAllRecordsModal ? 'block' : 'none'" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">All Business Cards</h5>
+          <button type="button" class="btn-close" (click)="closeAllRecordsModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="cards.length > 0">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>DOB</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let c of cards">
+                  <td>{{ c.name }}</td>
+                  <td>{{ c.gender }}</td>
+                  <td>{{ c.dob }}</td>
+                  <td>{{ c.email }}</td>
+                  <td>{{ c.phoneNumber }}</td>
+                  <td>{{ c.address }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-secondary me-2" (click)="editCard(c)">Edit</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteCard(c.id)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <nav *ngIf="totalItems > pageSize">
+              <ul class="pagination">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <a class="page-link" (click)="onPageChange(currentPage - 1)">Previous</a>
+                </li>
+                <li class="page-item" *ngFor="let p of pageNumbers" [class.active]="currentPage === p">
+                  <a class="page-link" (click)="onPageChange(p)">{{ p }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === pageNumbers[pageNumbers.length - 1]">
+                  <a class="page-link" (click)="onPageChange(currentPage + 1)">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div *ngIf="cards.length === 0" class="alert alert-info">
+            No records found.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllRecordsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Backdrop for All Records -->
+  <div class="modal-backdrop fade" [class.show]="showAllRecordsModal" *ngIf="showAllRecordsModal"></div>
+</div>
