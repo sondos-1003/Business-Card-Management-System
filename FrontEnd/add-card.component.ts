@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SecurityContext } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BusinessCardService } from '../../services/business-card.service';
 import { BusinessCard, BusinessCardFilterDto, CreateBusinessCardDto } from '../../models/business-card.model';
 
@@ -34,16 +35,16 @@ pageSize: number = 5;
   // Modal state for all records
   showAllRecordsModal: boolean = false;
 
-  constructor(private fb: FormBuilder, private service: BusinessCardService) {}
+  constructor(private fb: FormBuilder, private service: BusinessCardService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      gender: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern(/^[a-zA-Z\s]+$|^[^<>'";\-\-]*$/)]],
+      gender: ['', [Validators.required, Validators.pattern(/^(Male|Female)$/i)]],
       dob: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
-      address: ['']
+      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^[^<>'";\-\-]*$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      address: ['', [Validators.minLength(5), Validators.pattern(/^[^<>'";\-\-]*$/)]]
     });
 
     this.loadCards(); // load cards initially
@@ -52,7 +53,18 @@ pageSize: number = 5;
   // Preview form data before submitting
   preview() {
     if (this.form.valid) {
-      this.previewData = this.form.value as BusinessCard;
+      let formValue = this.form.value;
+      // Sanitize for preview
+      formValue = {
+        ...formValue,
+        name: this.sanitizer.sanitize(SecurityContext.HTML, formValue.name) || '',
+        email: this.sanitizer.sanitize(SecurityContext.HTML, formValue.email) || '',
+        phoneNumber: this.sanitizer.sanitize(SecurityContext.HTML, formValue.phoneNumber) || '',
+        address: this.sanitizer.sanitize(SecurityContext.HTML, formValue.address) || '',
+      };
+      this.previewData = formValue as BusinessCard;
+      console.log('Sanitized data for preview:', formValue);
+      alert('Sanitized data:\n' + JSON.stringify(formValue, null, 2));
     } else {
       alert('Please fill all required fields');
     }
@@ -62,7 +74,19 @@ pageSize: number = 5;
   submit() {
     if (this.form.valid) {
       debugger;
-      const payload = this.form.value as CreateBusinessCardDto;
+      let payload = this.form.value as CreateBusinessCardDto;
+      
+      // Sanitize inputs to prevent XSS and SQL injection attempts
+      payload = {
+        ...payload,
+        name: this.sanitizer.sanitize(SecurityContext.HTML, payload.name) || '',
+        email: this.sanitizer.sanitize(SecurityContext.HTML, payload.email) || '',
+        phoneNumber: this.sanitizer.sanitize(SecurityContext.HTML, payload.phoneNumber) || '',
+        address: this.sanitizer.sanitize(SecurityContext.HTML, payload.address) || '',
+        gender: payload.gender,
+        dob: payload.dob
+      };
+      
       debugger;
       if (this.editingId) {
         debugger;
