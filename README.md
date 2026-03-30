@@ -1,5 +1,5 @@
 # Business-Card-Management-System
-A full-stack web application built using Angular and .NET Web API to manage business cards with CRUD operations, validation, pagination, and filtering
+A full-stack web application built using Angular and .NET Web API to manage business cards with CRUD operations, validation, pagination, and filtering With SQL Injection mitigations criteria
 # Technologies Used
 # Frontend
 Angular
@@ -43,7 +43,7 @@ Controllers-Services-Repositories-DTOs-Data (DbContext)-Entities
 
 # Frontend (Angular)
 
-Find THem Inside FrontEnd Folder: Components-Services-Models-Forms (Reactive Forms)
+Find THem Inside FrontEnd Folder: Components-Services-Models-Forms (Reactive Forms) with security approaches of  SQL injection mitigations for Form fields ,doing sanitization for the input data
 
 
 # Fronend Screen:
